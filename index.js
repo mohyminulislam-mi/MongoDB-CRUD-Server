@@ -47,7 +47,30 @@ async function run() {
       const result = await userCollection.deleteOne(query);
       res.send(result);
     });
+    // User details by there id
+    app.get("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.findOne(query);
+      res.send(result);
+    });
+    // User update Profile by there id
+    app.patch("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedUser = req.body;
+      console.log("to update", id, updatedUser);
 
+      const query = { _id: new ObjectId(id) };
+      const update = {
+        $set: {
+          name: updatedUser.name,
+          email: updatedUser.email,
+        },
+      };
+      const options = {};
+      const result = await userCollection.updateOne(query, update, options);
+      res.send(result);
+    });
     await client.db("admin").command({ ping: 1 });
     console.log("✅ Connected to MongoDB!");
   } catch (err) {
